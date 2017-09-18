@@ -13,6 +13,7 @@ import java.util.*;
 import java.io.*;
 import java.util.logging.Level;
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
 import javax.mail.util.ByteArrayDataSource;
@@ -144,8 +145,8 @@ public class SendMail implements Serializable {
 
   private List<AttachmentEntry> attachments = new ArrayList<>();
 
-  public void addAttachment(AttachmentEntry entry) {
-    this.attachments.add(entry);
+  public void addAttachment(String filename, String contentType, byte[]data) {
+    this.attachments.add(new AttachmentEntry(filename, contentType, data));
   }
 
   public void send() throws Exception {
@@ -178,8 +179,7 @@ public class SendMail implements Serializable {
       for (AttachmentEntry atta : this.attachments) {
         try {
           MimeBodyPart attachment = new MimeBodyPart();
-          ByteArrayDataSource ds = new ByteArrayDataSource(atta.getData(), atta.getValue());
-          attachment.setDataHandler(new DataHandler(ds));
+          attachment.setDataHandler(new DataHandler(atta.getSource()));
           attachment.setFileName(atta.getKey());
           multi.addBodyPart(attachment);
         } catch (MessagingException ex) {
@@ -212,22 +212,15 @@ public class SendMail implements Serializable {
     }
   }
   
-  public static class AttachmentEntry implements Map.Entry<String, String> {
+  private static class AttachmentEntry implements Map.Entry<String, String> {
 
     private String key, value;
     private byte[]data;
 
-    public AttachmentEntry(String filename, String contentType, byte[]data) {
+    private AttachmentEntry(String filename, String contentType, byte[]data) {
       this.key = filename;
       this.value = contentType;
       this.data = data;
-    }
-
-    /**
-     * @return the data
-     */
-    public byte[] getData() {
-      return data;
     }
 
     @Override
@@ -245,6 +238,9 @@ public class SendMail implements Serializable {
       this.value = value;
       return value;
     }
-
+    
+    public DataSource getSource() {
+      return new ByteArrayDataSource(data, value);
+    }
   }
 }
