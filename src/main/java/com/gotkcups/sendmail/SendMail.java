@@ -22,9 +22,9 @@ import org.apache.log4j.Logger;
  *
  * @author RICARDO
  */
-public class EmailTransport implements Serializable {
+public class SendMail implements Serializable {
 
-  private static Logger logger = Logger.getLogger(EmailTransport.class);
+  private static Logger logger = Logger.getLogger(SendMail.class);
   protected String to, from, subject, textmessage, cc, bcc;
   public String replyto;
   protected Session session;
@@ -46,11 +46,11 @@ public class EmailTransport implements Serializable {
         System.getProperties().put("mail.smtp.auth", "true");
         System.getProperties().put("mail.smtp.starttls.enable", "true");*/
 
-    EmailTransport sendEmail = new EmailTransport("ricardo@drapers.com", "ricardo@drapers.com", "ricardo@drapers.com", "subject test", "message test");
+    SendMail sendEmail = new SendMail("ricardo@drapers.com", "ricardo@drapers.com", "ricardo@drapers.com", "subject test", "message test");
     sendEmail.send();
   }
 
-  public EmailTransport() {
+  public SendMail() {
     logger.info(String.format("Mail Server: %s", properties.getProperty("mail.smtp.host")));
     try {
       this.checkAuth();
@@ -82,7 +82,7 @@ public class EmailTransport implements Serializable {
     mail.password=zxc321cxzmail.smtp.host
 
      * */
-  public EmailTransport(String server) {
+  public SendMail(String server) {
     properties.put("mail.smtp.host", server);
     properties.put("mail.transport.protocol", "smtp");
     logger.info(String.format("Mail Server: %s", properties.getProperty("mail.smtp.host")));
@@ -94,7 +94,7 @@ public class EmailTransport implements Serializable {
     }
   }
 
-  public EmailTransport(String server, String to, String from, String replyto, String subject,
+  public SendMail(String server, String to, String from, String replyto, String subject,
           String textmessage) {
     this(server);
     setTo(to);
@@ -104,7 +104,7 @@ public class EmailTransport implements Serializable {
     setTextmessage(textmessage);
   }
 
-  public EmailTransport(String to, String from, String replyto, String subject,
+  public SendMail(String to, String from, String replyto, String subject,
           String textmessage) {
     this();
     setTo(to);
@@ -183,7 +183,7 @@ public class EmailTransport implements Serializable {
           attachment.setFileName(atta.getKey());
           multi.addBodyPart(attachment);
         } catch (MessagingException ex) {
-          java.util.logging.Logger.getLogger(EmailTransport.class.getName()).log(Level.SEVERE, null, ex);
+          java.util.logging.Logger.getLogger(SendMail.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
 
