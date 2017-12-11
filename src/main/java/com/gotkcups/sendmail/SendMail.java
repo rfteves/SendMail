@@ -33,6 +33,7 @@ public class SendMail implements Serializable {
   protected Properties properties = System.getProperties();
   protected String host, protocol;
   Authenticator auth;
+  private boolean inited;
 
   public static void main(String[] s) throws Exception {
     /*System.getProperties().put("mail.smtp.auth", "true");
@@ -150,6 +151,7 @@ public class SendMail implements Serializable {
   }
 
   public void send() throws Exception {
+    if (!inited)return;
     Exception error = null;
     try {
       Multipart multi = new MimeMultipart();
@@ -242,5 +244,12 @@ public class SendMail implements Serializable {
     public DataSource getSource() {
       return new ByteArrayDataSource(data, value);
     }
+  }
+
+  /**
+   * @param inited the inited to set
+   */
+  public void setInited(boolean inited) {
+    this.inited = inited;
   }
 }
